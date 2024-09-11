@@ -1,9 +1,10 @@
 package app.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-
+import org.springframework.stereotype.Repository;
 import app.entity.Voto;
 
-public interface VotoRepository extends JpaRepository<Voto, Long>{
+@Repository
+public interface VotoRepository extends JpaRepository<Voto, Long> {
 
 }
