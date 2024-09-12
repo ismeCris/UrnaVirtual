@@ -60,6 +60,17 @@ public class CandidatoService {
 		}
 	}
 
+	public Candidato findByNumero(String numero) {
+		
+		Optional<Candidato> optional = this.candidatoRepository.findByNumero(numero);
+		
+		if (optional.isPresent()) {
+			return optional.get();
+		} else {
+			throw new RuntimeException("Candidato não encontrado");
+		}
+	}
+	
 	public List<Candidato> listarCandidatosAtivos() {
 		return candidatoRepository.findByStatus(Candidato.Status.ATIVO);
 	}

@@ -17,7 +17,7 @@ import app.repository.VotoRepository;
 @Service
 public class VotoService {
 	@Autowired
-	VotoRepository votoRepository;
+	private VotoRepository votoRepository;
 
 	@Autowired
 	private EleitorService eleitorService;
@@ -26,53 +26,31 @@ public class VotoService {
 	private CandidatoService candidatoService;
 
 	public String votar(Voto voto, Long eleitorId) {
+		
 	    Eleitor eleitor = eleitorService.findById(eleitorId);
-
+	    
+	    
 	    if (eleitor == null) {
 	        throw new RuntimeException("Eleitor não encontrado");
 	    }
 
-	    if (eleitor.getStatus() != Eleitor.Status.APTO) {
+	    if (!this.eleitorApto(eleitor)) {
 	        throw new RuntimeException("Eleitor inapto para votação");
 	    }
 
-	    if (voto.getPrefeito() == null || voto.getVereador() == null) {
-	        throw new RuntimeException("Os candidatos para prefeito e vereador devem ser selecionados");
-	    }
-
-	    Candidato prefeito = voto.getPrefeito();
-	    Candidato vereador = voto.getVereador();
-
-	    System.out.println("Função do prefeito: " + prefeito.getFuncao());
-	    System.out.println("Função do vereador: " + vereador.getFuncao());
-
-	    if (prefeito.getFuncao() == null) {
-	        throw new RuntimeException("A função do candidato a prefeito é nula");
-	    }
-
-	    if (vereador.getFuncao() == null) {
-	        throw new RuntimeException("A função do candidato a vereador é nula");
-	    }
-
-	    if (!prefeito.getFuncao().equals(1)) {
-	        throw new RuntimeException("O candidato escolhido para prefeito não é um candidato a prefeito. Refaça a requisição!");
-	    }
-
-	    if (!vereador.getFuncao().equals(2)) {
-	        throw new RuntimeException("O candidato escolhido para vereador não é um candidato a vereador. Refaça a requisição!");
-	    }
-
-	    if (!vereador.getFuncao().equals(2)) {
-	        throw new RuntimeException("O candidato escolhido para vereador não é um candidato a vereador. Refaça a requisição!");
-	    }
+	    Candidato prefeito = candidatoService.findByNumero(voto.getPrefeito().getNumero());
+	    Candidato vereador = candidatoService.findByNumero(voto.getVereador().getNumero());
+	    voto.setPrefeito(prefeito);
+	    voto.setVereador(vereador);
+	    
 	    String hash = UUID.randomUUID().toString();
 	    voto.setComprovante(hash);
 	    voto.setDataHora(LocalDateTime.now());
 
 	    votoRepository.save(voto);
 
-	    eleitor.setStatus(Eleitor.Status.INATIVO);
-	    eleitorService.definirStatus(eleitor);
+	    eleitor.setStatus(Eleitor.Status.VOTOU);
+	    eleitorService.update(eleitor, eleitorId);
 
 	    return hash;
 	}
@@ -100,6 +78,53 @@ public class VotoService {
 		vereadorAti.sort(porVotosApuradosDesc);
 
 		return apuracao;
+	}
+	
+	public boolean eleitorApto(Eleitor eleitor) {
+		
+		if(eleitor.getStatus().equals(Eleitor.Status.PENDENTE)) {
+			eleitor.setStatus(Eleitor.Status.BLOQUEADO);
+			this.eleitorService.update(eleitor, eleitor.getId());
+			throw new RuntimeException("Eleitor com cadastro pendente tentou votar e foi bloqueado");
+		}
+		
+		if(eleitor.getStatus().equals(Eleitor.Status.APTO) ) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	public boolean verificarCandidatos(Voto voto) {
+		
+		if (voto.getPrefeito() == null || voto.getVereador() == null) {
+	        throw new RuntimeException("Os candidatos para prefeito e vereador devem ser selecionados");
+	    }
+
+	    Candidato prefeito = voto.getPrefeito();
+	    Candidato vereador = voto.getVereador();
+
+	    System.out.println("Função do prefeito: " + prefeito.getFuncao());
+	    System.out.println("Função do vereador: " + vereador.getFuncao());
+
+	    if (prefeito.getFuncao() == null) {
+	        throw new RuntimeException("A função do candidato a prefeito é nula");
+	    }
+
+	    if (vereador.getFuncao() == null) {
+	        throw new RuntimeException("A função do candidato a vereador é nula");
+	    }
+
+	    if (!prefeito.getFuncao().equals(1)) {
+	        throw new RuntimeException("O candidato escolhido para prefeito não é um candidato a prefeito. Refaça a requisição!");
+	    }
+
+	    if (!vereador.getFuncao().equals(2)) {
+	        throw new RuntimeException("O candidato escolhido para vereador não é um candidato a vereador. Refaça a requisição!");
+	    }
+	    
+	    return true;
+		
 	}
 
 }
