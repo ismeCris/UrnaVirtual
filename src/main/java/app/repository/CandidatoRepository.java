@@ -11,4 +11,6 @@ import app.entity.Candidato;
 public interface CandidatoRepository extends JpaRepository<Candidato, Long> {
 
 	List<Candidato> findByStatus(Candidato.Status status);
+
+	List<Candidato> findByFuncaoAndStatus(Candidato.Funcao funcao, Candidato.Status status);
 }

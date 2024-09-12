@@ -26,7 +26,7 @@ public class Voto {
 	private long id;
 
 	@NotNull(message = "Data e Hora Sao obrigatorios")
-	private LocalDateTime datas;
+	private LocalDateTime dataHora;
 
     @NotBlank(message = "O comprovante (hash) é obrigatório")
 	private String comprovante;
