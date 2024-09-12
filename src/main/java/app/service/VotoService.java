@@ -61,14 +61,16 @@ public class VotoService {
 		Apuracao apuracao = new Apuracao();
 		List<Candidato> prefeotosAti = candidatoService.prefeitosAtivos();
 		List<Candidato> vereadorAti = candidatoService.vereadoresAtivos();
+		int totalVotos = 0;
 
 		for (Candidato prefeito : prefeotosAti) {
-			int totalVotos = votoRepository.contaVotosPrefeito(prefeito.getId());
-			prefeito.setVotosApurados(totalVotos);
+			int totalVotosCandidato = votoRepository.contaVotosPrefeito(prefeito.getId());
+			totalVotos += totalVotosCandidato;
+			prefeito.setVotosApurados(totalVotosCandidato);
 		}
 		for (Candidato vereador : vereadorAti) {
-			int totalVotos = votoRepository.contaVotosVereador(vereador.getId());
-			vereador.setVotosApurados(totalVotos);
+			int totalVotosCandidato = votoRepository.contaVotosVereador(vereador.getId());
+			vereador.setVotosApurados(totalVotosCandidato);
 		}
 
 		// Ordenar listas pelo total de votos
@@ -76,6 +78,10 @@ public class VotoService {
 
 		prefeotosAti.sort(porVotosApuradosDesc);
 		vereadorAti.sort(porVotosApuradosDesc);
+		
+		apuracao.setCandidatosPrefeito(prefeotosAti);
+		apuracao.setCandidatosVereador(vereadorAti);
+		apuracao.setTotalVotos(totalVotos);
 
 		return apuracao;
 	}
