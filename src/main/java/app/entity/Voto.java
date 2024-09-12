@@ -20,7 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 public class Voto {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -28,7 +28,7 @@ public class Voto {
 	@NotNull(message = "Data e Hora Sao obrigatorios")
 	private LocalDateTime dataHora;
 
-    @NotBlank(message = "O comprovante (hash) é obrigatório")
+	@NotBlank(message = "O comprovante (hash) é obrigatório")
 	private String comprovante;
 
 	@ManyToOne

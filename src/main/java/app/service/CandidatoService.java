@@ -1,45 +1,86 @@
 package app.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import app.entity.Candidato;
+import app.entity.Eleitor;
 import app.repository.CandidatoRepository;
 
 @Service
 public class CandidatoService {
 
-    @Autowired
-    private CandidatoRepository candidatoRepository;
+	@Autowired
+	private CandidatoRepository candidatoRepository;
 
-    // Cadastra um novo candidato com status ativo
-    public Candidato cadastrarCandidato(Candidato candidato) {
-        candidato.setStatus(Candidato.Status.ATIVO);
-        return candidatoRepository.save(candidato);
-    }
+	// Cadastra um novo candidato com status ativo
+	public String cadastrarCandidato(Candidato candidato) {
+	    if (candidato.getFuncao() == null) {
+	        return "A função do candidato é obrigatória";
+	    }
+	    candidato.setStatus(Candidato.Status.ATIVO);
+	    candidatoRepository.save(candidato);
+	    return "Candidato salvo com sucesso";
+	}
 
-    // Lista apenas os candidatos ativos
-    public List<Candidato> listarCandidatosAtivos() {
-        return candidatoRepository.findByStatus(Candidato.Status.ATIVO);
-    }
 
-    public List<Candidato> getPrefeitosAtivos() {
-        return candidatoRepository.findByFuncaoAndStatus(Candidato.Funcao.PREFEITO, Candidato.Status.ATIVO);
-    }
- 
-    public List<Candidato> getVereadoresAtivos() {
-        return candidatoRepository.findByFuncaoAndStatus(Candidato.Funcao.VEREADOR, Candidato.Status.ATIVO);
-    }
+	public String atualizar(Candidato candidato, Long id) {
+		Optional<Candidato> candidatoOptional = candidatoRepository.findById(id);
+		if (candidatoOptional.isEmpty()) {
+			throw new RuntimeException("Candidato não encontrado com o ID: " + id);
+		}
+		Candidato candidatoExistente = candidatoOptional.get();
 
-    // Desativa candidato
-    public void inativaCandidato(Long id) {
-        Candidato candidato = candidatoRepository.findById(id).orElse(null);
-        if (candidato == null) {
-            throw new RuntimeException("Candidato não encontrado");
-        }
-        candidato.setStatus(Candidato.Status.INATIVO);
-        candidatoRepository.save(candidato);
-    }
+		// Verificar o status do candidato existente
+		if (candidatoExistente.getStatus().equals(Candidato.Status.INATIVO)) {
+			throw new RuntimeException("O candidato está inativo, portanto, não pode ser atualizado");
+		}
+
+		candidatoExistente.setNome(candidato.getNome());
+		candidatoExistente.setCpf(candidato.getCpf());
+		candidatoExistente.setNumero(candidato.getNumero());
+		candidatoExistente.setFuncao(candidato.getFuncao());
+
+		candidatoRepository.save(candidatoExistente);
+
+		return "Candidato atualizado com sucesso";
+	}
+
+	public Candidato findById(long id) {
+
+		Optional<Candidato> optional = this.candidatoRepository.findById(id);
+
+		if (optional.isPresent()) {
+			return optional.get();
+		} else {
+			throw new RuntimeException("Candidato não encontrado");
+		}
+	}
+
+	public List<Candidato> listarCandidatosAtivos() {
+		return candidatoRepository.findByStatus(Candidato.Status.ATIVO);
+	}
+
+	public List<Candidato> prefeitosAtivos() {
+	    return candidatoRepository.findByFuncaoAndStatus(1, Candidato.Status.ATIVO);  // 1 para Prefeito
+	}
+
+	public List<Candidato> vereadoresAtivos() {
+	    return candidatoRepository.findByFuncaoAndStatus(2, Candidato.Status.ATIVO);  // 2 para Vereador
+	}
+
+
+	// Desativa candidato
+	public String inativaCandidato(Long id) {
+		Candidato candidato = candidatoRepository.findById(id).orElse(null);
+		if (candidato == null) {
+			throw new RuntimeException("Candidato não encontrado");
+		}
+		candidato.setStatus(Candidato.Status.INATIVO);
+		candidatoRepository.save(candidato);
+		return "Candidato desativado com sucesso";
+	}
 }

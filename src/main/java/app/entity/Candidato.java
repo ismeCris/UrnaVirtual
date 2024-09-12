@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +35,8 @@ public class Candidato {
 	@NotBlank(message = "O nome é obrigatório")
 	private String nome;
 
-	@CPF(message = "")
+	@Pattern(regexp = "^\\d{3}\\.\\d{3}\\.\\d{3}\\-\\d{2}$", message = "Insira um CPF válido")
+	@Column(unique = true)
 	private String cpf;
 
 	@Column(name = "numero", unique = true)
@@ -42,20 +44,23 @@ public class Candidato {
 	private String numero;
 
 	@NotNull(message = "A função é obrigatória")
-	@Enumerated(EnumType.ORDINAL)
-	private Funcao funcao;
+	private Integer funcao; // 1 Prefeito - 2 Vereador
 
 	@Enumerated(EnumType.STRING)
-	private Status status; 
+	private Status status;
 
 	@Transient
 	private Integer votosApurados;
 
-	public enum Funcao {
-		PREFEITO, VEREADOR
+	public boolean isPrefeito() {
+		return this.funcao != null && this.funcao == 1;
 	}
-	
-	public enum Status{
+
+	public boolean isVereador() {
+		return this.funcao != null && this.funcao == 2;
+	}
+
+	public enum Status {
 		ATIVO, INATIVO;
 	}
 }
