@@ -1,11 +1,11 @@
 package app.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import javax.xml.crypto.Data;
-
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,6 +20,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 public class Voto {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
 
 	@NotNull(message = "Data e Hora Sao obrigatorios")
 	private LocalDateTime datas;
