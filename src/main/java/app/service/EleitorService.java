@@ -27,9 +27,10 @@ public class EleitorService {
 
 	public String update(Eleitor eleitor, long id) {
 
-		
 		eleitor.setId(id);
 		
+		Eleitor eleitorInDb = this.findById(id);
+		eleitor.setStatus(eleitorInDb.getStatus());
 		eleitor.setStatus(this.definirStatus(eleitor));
 		
 		if(eleitor.getStatus().equals(Status.INATIVO)) {
@@ -97,6 +98,10 @@ public class EleitorService {
 	}
 	
 	public boolean isPendente(Eleitor eleitor) {
+		
+		if(eleitor.getCpf() == null || eleitor.getEmail() == null) {
+			return true;
+		}
 		
 		if(eleitor.getCpf().isEmpty() || eleitor.getEmail().isEmpty()) {
 			return true;
