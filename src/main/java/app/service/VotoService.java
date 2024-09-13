@@ -38,8 +38,8 @@ public class VotoService {
 	        throw new RuntimeException("Eleitor inapto para votação");
 	    }
 
-	    Candidato prefeito = candidatoService.findByNumero(voto.getPrefeito().getNumero());
-	    Candidato vereador = candidatoService.findByNumero(voto.getVereador().getNumero());
+	    Candidato prefeito = candidatoService.findById(voto.getPrefeito().getId());
+	    Candidato vereador = candidatoService.findById(voto.getVereador().getId());
 	    voto.setPrefeito(prefeito);
 	    voto.setVereador(vereador);
 	    
