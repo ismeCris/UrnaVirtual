@@ -17,7 +17,7 @@ public class EleitorService {
 	EleitorRepository eleitorRepository;
 
 	public String save(Eleitor eleitor) {
-		
+
 		eleitor.setStatus(this.definirStatus(eleitor));
 
 		this.eleitorRepository.save(eleitor);
@@ -26,16 +26,21 @@ public class EleitorService {
 	}
 
 	public String update(Eleitor eleitor, long id) {
-
-		eleitor.setId(id);
-		
+		// Busca o eleitor atual no banco de dados
 		Eleitor eleitorInDb = this.findById(id);
-		eleitor.setStatus(eleitorInDb.getStatus());
-		eleitor.setStatus(this.definirStatus(eleitor));
-		
-		if(eleitor.getStatus().equals(Status.INATIVO)) {
+
+		// Verifica se o eleitor está inativo ou já votou
+		if (eleitorInDb.getStatus().equals(Status.INATIVO)) {
 			throw new RuntimeException("O eleitor está inativo, portanto, não pode ser atualizado");
 		}
+		if (eleitorInDb.getStatus().equals(Status.VOTOU)) {
+			throw new RuntimeException("O eleitor já votou, portanto, não pode ser atualizado");
+		}
+		// Mantém o ID do eleitor e define outros atributos conforme necessário
+		eleitor.setId(id);
+
+		Status novoStatus = this.definirStatus(eleitor);
+		eleitor.setStatus(novoStatus);
 
 		this.eleitorRepository.save(eleitor);
 
@@ -58,55 +63,58 @@ public class EleitorService {
 	}
 
 	public String delete(long id) {
-		
+
 		Eleitor eleitor = this.findById(id);
-		
-		if(eleitor.getStatus().equals(Status.VOTOU)) {
+
+		if (eleitor.getStatus().equals(Status.VOTOU)) {
 			throw new RuntimeException("O eleitor já votou, portanto, não pode ser inativado");
 		}
-		
+
 		eleitor.setStatus(Status.INATIVO);
 
-		this.update(eleitor, id);
+		// Atualiza diretamente no repositório sem chamar update(), pois o eleitor está
+		// sendo inativado
+		this.eleitorRepository.save(eleitor);
 
 		return "Eleitor desativado";
 	}
 
-	public Status definirStatus (Eleitor eleitor) {
-		
+	public Status definirStatus(Eleitor eleitor) {
+
 		Status status;
-		
-		if(eleitor.getStatus() == null) {
+
+		if (eleitor.getStatus() == null) {
 			eleitor.setStatus(Status.PENDENTE);
 		}
-		
-		if(eleitor.getStatus().equals(Status.INATIVO)) {
+
+		if (eleitor.getStatus().equals(Status.INATIVO)) {
 			status = Status.INATIVO;
-		}else if (eleitor.getStatus().equals(Status.BLOQUEADO)) {
+		} else if (eleitor.getStatus().equals(Status.BLOQUEADO)) {
 			status = Status.BLOQUEADO;
-		} if(isPendente(eleitor)){
-			 status = Status.PENDENTE;
-		}else if (eleitor.getStatus().equals(Status.VOTOU)) {
+		}
+		if (isPendente(eleitor)) {
+			status = Status.PENDENTE;
+		} else if (eleitor.getStatus().equals(Status.VOTOU)) {
 			status = Status.VOTOU;
-		}else {
+		} else {
 			status = Status.APTO;
 		}
-		
+
 		return status;
-		
+
 	}
-	
+
 	public boolean isPendente(Eleitor eleitor) {
-		
-		if(eleitor.getCpf() == null || eleitor.getEmail() == null) {
+
+		if (eleitor.getCpf() == null || eleitor.getEmail() == null) {
 			return true;
 		}
-		
-		if(eleitor.getCpf().isEmpty() || eleitor.getEmail().isEmpty()) {
+
+		if (eleitor.getCpf().isEmpty() || eleitor.getEmail().isEmpty()) {
 			return true;
-		}else {
+		} else {
 			return false;
 		}
-		
+
 	}
 }
