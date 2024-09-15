@@ -80,7 +80,6 @@ public class EleitorService {
 			eleitor.setStatus(Status.PENDENTE);
 		}
 		
-		
 		if(eleitor.getStatus().equals(Status.INATIVO)) {
 			status = Status.INATIVO;
 		}else if (eleitor.getStatus().equals(Status.BLOQUEADO)) {

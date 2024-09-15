@@ -23,15 +23,9 @@ public class VotoController {
 	@Autowired
 	private VotoService votoService;
 
-	@Autowired
-	private EleitorService eleitorService;
-
 	@PostMapping("/votar/{eleitorId}")
 	public ResponseEntity<String> votar(@RequestBody Voto voto, @PathVariable Long eleitorId) {
 		try {
-			if (eleitorService.findById(eleitorId) == null) {
-				return new ResponseEntity<>("Eleitor não encontrado", HttpStatus.NOT_FOUND);
-			}
 			String comprovante = votoService.votar(voto, eleitorId);
 			return new ResponseEntity<>(comprovante, HttpStatus.CREATED);
 		} catch (RuntimeException e) {

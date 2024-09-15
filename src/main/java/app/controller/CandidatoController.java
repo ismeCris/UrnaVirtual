@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,11 +13,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import app.entity.Candidato;
 import app.service.CandidatoService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/candidato")
+@Validated
 public class CandidatoController {
 
 	@Autowired
@@ -24,11 +28,8 @@ public class CandidatoController {
 
 	 @PostMapping("/cadastrar")
 	// No serviço ou controlador
-	 public ResponseEntity<String> cadastrarCandidato(@RequestBody Candidato candidato) {
+	 public ResponseEntity<String> cadastrarCandidato(@RequestBody @Valid Candidato candidato) {
 	     try {
-	         if (candidato.getFuncao() == null) {
-	             return new ResponseEntity<>("A função do candidato é obrigatória", HttpStatus.BAD_REQUEST);
-	         }
 	         String response = candidatoService.cadastrarCandidato(candidato);
 	         return new ResponseEntity<>(response, HttpStatus.CREATED);
 	     } catch (RuntimeException e) {
@@ -38,7 +39,7 @@ public class CandidatoController {
 
 
 	@PutMapping("/update/{id}")
-	public ResponseEntity<String> update(@RequestBody Candidato candidato, @PathVariable long id) {
+	public ResponseEntity<String> update(@RequestBody @Valid Candidato candidato, @PathVariable long id) {
 		try {
 			String msg = this.candidatoService.atualizar(candidato, id);
 			return new ResponseEntity<>(msg, HttpStatus.OK);
@@ -68,8 +69,8 @@ public class CandidatoController {
 		}
 	}
 
-	@GetMapping("/VereAtivos")
-	public ResponseEntity<List<Candidato>> VereadoresAtivos() {
+	@GetMapping("/vereAtivos")
+	public ResponseEntity<List<Candidato>> vereadoresAtivos() {
 		try {
 			List<Candidato> candidato = this.candidatoService.vereadoresAtivos();
 			return new ResponseEntity<>(candidato, HttpStatus.OK);
@@ -80,7 +81,7 @@ public class CandidatoController {
 	}
 
 	@GetMapping("/prefeAtivos")
-	public ResponseEntity<List<Candidato>> PrefeitosAtivos() {
+	public ResponseEntity<List<Candidato>> prefeitosAtivos() {
 		try {
 			List<Candidato> candidato = this.candidatoService.prefeitosAtivos();
 			return new ResponseEntity<>(candidato, HttpStatus.OK);

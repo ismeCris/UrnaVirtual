@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import app.entity.Candidato;
-import app.entity.Eleitor;
 import app.repository.CandidatoRepository;
 
 @Service
@@ -18,14 +17,10 @@ public class CandidatoService {
 
 	// Cadastra um novo candidato com status ativo
 	public String cadastrarCandidato(Candidato candidato) {
-	    if (candidato.getFuncao() == null) {
-	        return "A função do candidato é obrigatória";
-	    }
 	    candidato.setStatus(Candidato.Status.ATIVO);
 	    candidatoRepository.save(candidato);
 	    return "Candidato salvo com sucesso";
 	}
-
 
 	public String atualizar(Candidato candidato, Long id) {
 		Optional<Candidato> candidatoOptional = candidatoRepository.findById(id);

@@ -1,10 +1,5 @@
 package app.entity;
 
-import javax.management.relation.Role;
-
-import org.hibernate.validator.constraints.br.CPF;
-
-import ch.qos.logback.core.status.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -35,6 +30,7 @@ public class Candidato {
 	@NotBlank(message = "O nome é obrigatório")
 	private String nome;
 
+	@NotNull(message = "Insira um CPF válido")
 	@Pattern(regexp = "^\\d{3}\\.\\d{3}\\.\\d{3}\\-\\d{2}$", message = "Insira um CPF válido")
 	@Column(unique = true)
 	private String cpf;
