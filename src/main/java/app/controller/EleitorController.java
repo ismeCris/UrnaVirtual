@@ -71,7 +71,7 @@ public class EleitorController {
 			String message = this.eleitorService.delete(id);
 			return new ResponseEntity<>(message, HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>("Erro: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+			 return new ResponseEntity<>("Eleitor não encontrado", HttpStatus.NOT_FOUND);
 		}
 	}
 }
