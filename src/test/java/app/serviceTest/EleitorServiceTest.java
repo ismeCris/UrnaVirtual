@@ -11,12 +11,10 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import app.entity.Candidato.Status;
 import app.entity.Eleitor;
 import app.repository.EleitorRepository;
 import app.service.EleitorService;
@@ -75,6 +73,21 @@ public class EleitorServiceTest {
 		String result = eleitorService.save(eleitor);
 		assertEquals("Eleitor cadastrado", result);
 		assertEquals(Eleitor.Status.PENDENTE, eleitor.getStatus());
+	}
+	
+	@Test
+	void SaveStatusApto() {
+		
+		Eleitor eleitor = new Eleitor();
+		eleitor.setNomeCompleto("Ana Costa");
+		eleitor.setCpf("960.156.460-80");
+		eleitor.setEmail("aninha@gmail.com");
+		
+		when(eleitorRepository.save(any(Eleitor.class))).thenReturn(eleitor);
+		
+		String result = eleitorService.save(eleitor);
+		assertEquals("Eleitor cadastrado", result);
+		assertEquals(Eleitor.Status.APTO, eleitor.getStatus());
 	}
 
 	@Test
@@ -141,8 +154,50 @@ public class EleitorServiceTest {
 	}
 
 	@Test
-	void UpdateStatusApto() {
+	void UpdateStatusPendente() {
 
+		Eleitor eleitorInDb = new Eleitor();
+		eleitorInDb.setNomeCompleto("Carlos Santos");
+		eleitorInDb.setProfissao("Médico");
+		eleitorInDb.setCelular("(31) 91234-5678");
+		eleitorInDb.setStatus(Eleitor.Status.PENDENTE);
+
+		when(eleitorRepository.findById(1L)).thenReturn(Optional.of(eleitorInDb));
+
+		Eleitor eleitorToUpdate = new Eleitor();
+		eleitorToUpdate.setNomeCompleto("Carlos Santos");
+		eleitorToUpdate.setProfissao("Médico");
+		eleitorToUpdate.setCelular("(31) 91234-5678");
+
+		String result = eleitorService.update(eleitorToUpdate, 1L);
+		assertEquals("Eleitor atualizado", result);
+	}
+	
+	@Test
+	void UpdateCpfOuEmailVazio() {
+		
+		Eleitor eleitorInDb = new Eleitor();
+		eleitorInDb.setNomeCompleto("Carlos Santos");
+		eleitorInDb.setProfissao("Médico");
+		eleitorInDb.setCpf("");
+		eleitorInDb.setCelular("(31) 91234-5678");
+		eleitorInDb.setEmail("");
+		eleitorInDb.setStatus(Eleitor.Status.PENDENTE);
+		
+		when(eleitorRepository.findById(1L)).thenReturn(Optional.of(eleitorInDb));
+		
+		Eleitor eleitorToUpdate = new Eleitor();
+		eleitorToUpdate.setNomeCompleto("Carlos Santos");
+		eleitorToUpdate.setProfissao("Médico");
+		eleitorToUpdate.setCelular("(31) 91234-5678");
+		
+		String result = eleitorService.update(eleitorToUpdate, 1L);
+		assertEquals("Eleitor atualizado", result);
+	}
+	
+	@Test
+	void UpdateStatusApto() {
+		
 		Eleitor eleitorInDb = new Eleitor();
 		eleitorInDb.setNomeCompleto("Carlos Santos");
 		eleitorInDb.setCpf("111.222.333-44");
@@ -150,16 +205,41 @@ public class EleitorServiceTest {
 		eleitorInDb.setCelular("(31) 91234-5678");
 		eleitorInDb.setEmail("carlos@teste.com");
 		eleitorInDb.setStatus(Eleitor.Status.APTO);
-
+		
 		when(eleitorRepository.findById(1L)).thenReturn(Optional.of(eleitorInDb));
-
+		
 		Eleitor eleitorToUpdate = new Eleitor();
 		eleitorToUpdate.setNomeCompleto("Carlos Santos");
 		eleitorToUpdate.setCpf("111.222.333-44");
 		eleitorToUpdate.setProfissao("Médico");
 		eleitorToUpdate.setCelular("(31) 91234-5678");
 		eleitorToUpdate.setEmail("carlos@teste.com");
-
+		
+		String result = eleitorService.update(eleitorToUpdate, 1L);
+		assertEquals("Eleitor atualizado", result);
+	}
+	
+	@Test
+	void UpdateStatusVotou() {
+		
+		Eleitor eleitorInDb = new Eleitor();
+		eleitorInDb.setNomeCompleto("Carlos Santos");
+		eleitorInDb.setCpf("111.222.333-44");
+		eleitorInDb.setProfissao("Médico");
+		eleitorInDb.setCelular("(31) 91234-5678");
+		eleitorInDb.setEmail("carlos@teste.com");
+		eleitorInDb.setStatus(Eleitor.Status.APTO);
+		
+		when(eleitorRepository.findById(1L)).thenReturn(Optional.of(eleitorInDb));
+		
+		Eleitor eleitorToUpdate = new Eleitor();
+		eleitorToUpdate.setNomeCompleto("Carlos Santos");
+		eleitorToUpdate.setCpf("111.222.333-44");
+		eleitorToUpdate.setProfissao("Médico");
+		eleitorToUpdate.setCelular("(31) 91234-5678");
+		eleitorToUpdate.setEmail("carlos@teste.com");
+		eleitorToUpdate.setStatus(Eleitor.Status.VOTOU);
+		
 		String result = eleitorService.update(eleitorToUpdate, 1L);
 		assertEquals("Eleitor atualizado", result);
 	}
@@ -209,25 +289,6 @@ public class EleitorServiceTest {
 		eleitor.setEmail("");
 
 		assertTrue(eleitorService.isPendente(eleitor));
-	}
-
-	@Test
-	void UpdateStatusVotou() {
-		Eleitor eleitorInDb = new Eleitor();
-		eleitorInDb.setId(1L);
-		eleitorInDb.setStatus(Eleitor.Status.VOTOU);
-
-		when(eleitorRepository.findById(1L)).thenReturn(Optional.of(eleitorInDb));
-
-		Eleitor eleitorToUpdate = new Eleitor();
-		eleitorToUpdate.setId(1L);
-		eleitorToUpdate.setStatus(Eleitor.Status.APTO); // Tentativa de alteração de status
-
-		Exception exception = assertThrows(RuntimeException.class, () -> {
-			eleitorService.update(eleitorToUpdate, 1L);
-		});
-
-		assertEquals("O eleitor já votou, portanto, não pode ser atualizado", exception.getMessage());
 	}
 
 	@Test
