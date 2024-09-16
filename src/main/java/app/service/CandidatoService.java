@@ -18,7 +18,7 @@ public class CandidatoService {
 	// Cadastra um novo candidato com status ativo
 	public String cadastrarCandidato(Candidato candidato) {
 		
-		if(candidato.getFuncao() != 1 || candidato.getFuncao() != 2) {
+		if(candidato.getFuncao() != 1 && candidato.getFuncao() != 2) {
 			throw new RuntimeException("A função deve ser 1 para prefeito ou 2 para vereador");
 		}
 		
