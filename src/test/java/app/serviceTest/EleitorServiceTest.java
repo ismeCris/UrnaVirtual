@@ -1,20 +1,18 @@
 package app.serviceTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
 import app.entity.Eleitor;
 import app.repository.EleitorRepository;
 import app.service.EleitorService;
@@ -24,7 +22,7 @@ public class EleitorServiceTest {
 
 	@Autowired
 	EleitorService eleitorService;
-
+	 Eleitor eleitor;
 	@MockBean
 	EleitorRepository eleitorRepository;
 
@@ -317,7 +315,46 @@ public class EleitorServiceTest {
 		assertEquals(Eleitor.Status.INATIVO, eleitorInDb.getStatus());
 	}
 	
+	@Test
+	void isPendenteQuandoEmailVazio() {
+	    Eleitor eleitor = new Eleitor();
+	    eleitor.setCpf("123.456.789-00");
+	    eleitor.setEmail("");
 
+	    assertTrue(eleitorService.isPendente(eleitor));
+	}
 
+	@Test
+	void naoEPendenteQuandoCpfEEmailPreenchidos() {
+	    Eleitor eleitor = new Eleitor();
+	    eleitor.setCpf("123.456.789-00");
+	    eleitor.setEmail("email@teste.com");
 
+	    assertFalse(eleitorService.isPendente(eleitor));
+	}
+	@Test
+	void isPendenteQuandoCpfVazio() {
+	    Eleitor eleitor = new Eleitor();
+	    eleitor.setCpf("");
+	    eleitor.setEmail("email@teste.com");
+
+	    assertTrue(eleitorService.isPendente(eleitor));
+	}
+	@Test
+	void isPendenteQuandoEmailNull() {
+	    Eleitor eleitor = new Eleitor();
+	    eleitor.setCpf("123.456.789-00");
+	    eleitor.setEmail(null);
+
+	    assertTrue(eleitorService.isPendente(eleitor));
+	}
+	@Test
+	void isPendenteQuandoCpfNull() {
+	    Eleitor eleitor = new Eleitor();
+	    eleitor.setCpf(null);
+	    eleitor.setEmail("email@teste.com");
+
+	    assertTrue(eleitorService.isPendente(eleitor));
+	}
+	
 }
