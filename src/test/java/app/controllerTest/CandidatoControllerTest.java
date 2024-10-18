@@ -38,7 +38,7 @@ public class CandidatoControllerTest {
 		
 		Candidato candidatoVereador = new Candidato(2L, "Giulia Santori", "580.890.910-40", "48488", 2, Candidato.Status.ATIVO, null);
 		
-		Candidato candidatoInativo = new Candidato(3L, "Zirlanda Lacerda", "580.890.910-40", "48488", 2, Candidato.Status.INATIVO, null);
+		Candidato candidatoInativo = new Candidato(3L, "Zirlanda Lacerda", "367.319.736-56", "64563", 2, Candidato.Status.INATIVO, null);
 
 		Optional<Candidato> optionalPrefeito = Optional.of(candidatoPrefeito);
 		
@@ -53,8 +53,6 @@ public class CandidatoControllerTest {
 		
 		List<Candidato> vereadoresAtivos = new ArrayList<>();
 		vereadoresAtivos.add(candidatoVereador);
-		
-		
 		
 		Mockito.when(candidatoRepository.findById(1L)).thenReturn(optionalPrefeito);
 		
