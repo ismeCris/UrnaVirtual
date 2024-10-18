@@ -19,7 +19,7 @@ import app.service.CandidatoService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/candidato")
+@RequestMapping("/api/candidatos")
 @Validated
 public class CandidatoController {
 
