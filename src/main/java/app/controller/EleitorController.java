@@ -19,7 +19,7 @@ import app.service.EleitorService;
 
 @RestController
 @RequestMapping("/api/eleitor")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class EleitorController{
 
 	@Autowired

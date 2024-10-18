@@ -19,7 +19,7 @@ import app.service.VotoService;
 
 @RestController
 @RequestMapping("/api/votos")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class VotoController {
 
 	@Autowired
