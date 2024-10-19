@@ -56,6 +56,17 @@ public class EleitorController{
 		}
 	}
 	
+	@GetMapping("/findByCpf/{cpf}")
+	public ResponseEntity<Eleitor> findByCpf(@PathVariable String cpf) {
+		try {
+			Eleitor eleitor = this.eleitorService.findByCpf(cpf);
+			return new ResponseEntity<>(eleitor, HttpStatus.OK);
+			
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	@GetMapping("/findAll")
 	public ResponseEntity<List<Eleitor>> findAll(){
 		try {
