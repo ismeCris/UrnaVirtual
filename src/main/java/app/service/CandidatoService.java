@@ -16,24 +16,25 @@ public class CandidatoService {
 	private CandidatoRepository candidatoRepository;
 
 	// Cadastra um novo candidato com status ativo
-	public String cadastrarCandidato(Candidato candidato) {
-		
-		if(candidato.getFuncao() != 1 && candidato.getFuncao() != 2) {
-			throw new RuntimeException("A função deve ser 1 para prefeito ou 2 para vereador");
+		public String cadastrarCandidato(Candidato candidato) {
+			
+			if(candidato.getFuncao() != 1 && candidato.getFuncao() != 2) {
+				throw new RuntimeException("A função deve ser 1 para prefeito ou 2 para vereador");
+			}
+			confereDados(candidato);
+		    candidato.setStatus(Candidato.Status.ATIVO);
+		    candidatoRepository.save(candidato);
+		    return "Candidato salvo com sucesso";
 		}
 		
-	    candidato.setStatus(Candidato.Status.ATIVO);
-	    candidatoRepository.save(candidato);
-	    return "Candidato salvo com sucesso";
-	}
-
+		
 	public String atualizar(Candidato candidato, Long id) {
 		Optional<Candidato> candidatoOptional = candidatoRepository.findById(id);
 		if (candidatoOptional.isEmpty()) {
 			throw new RuntimeException("Candidato não encontrado com o ID: " + id);
 		}
 		Candidato candidatoExistente = candidatoOptional.get();
-
+		confereDados(candidato);
 		// Verificar o status do candidato existente
 		if (candidatoExistente.getStatus().equals(Candidato.Status.INATIVO)) {
 			throw new RuntimeException("O candidato está inativo, portanto, não pode ser atualizado");
@@ -94,4 +95,27 @@ public class CandidatoService {
 		candidatoRepository.save(candidato);
 		return "Candidato desativado com sucesso";
 	}
+	
+	public void confereDados(Candidato candidato) {
+	    if (candidato.getFuncao() != 1 && candidato.getFuncao() != 2) {
+	        throw new RuntimeException("A função deve ser 1 para prefeito ou 2 para vereador");
+	    }
+
+	    // Verifica o cpf e garante que o mesmo cpf seja usado se o candidato for o mesmo
+	    Optional<Candidato> candidatoExistente = candidatoRepository.findByCpf(candidato.getCpf());
+	    if (candidatoExistente.isPresent() && !candidatoExistente.get().getId().equals(candidato.getId())) {
+	        throw new RuntimeException("O CPF " + candidato.getCpf() + " já está cadastrado para outro candidato.");
+	    }
+
+	    // Validação do número
+	    if (candidato.getFuncao() == 1 && candidato.getNumero().length() != 2) {
+	        throw new RuntimeException("O número do candidato a prefeito deve ter exatamente 2 caracteres.");
+	    }
+	    if (candidato.getFuncao() == 2 && candidato.getNumero().length() != 5) {
+	        throw new RuntimeException("O número do candidato a vereador deve ter exatamente 5 caracteres.");
+	    }
+	}
+
+
+
 }

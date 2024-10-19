@@ -11,6 +11,7 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,6 +37,7 @@ public class Candidato {
 	private String cpf;
 
 	@Column(name = "numero", unique = true)
+	@Size(min = 2, max = 5, message = "O número do candidato deve ter 2 caracteres para prefeito e 5 para vereador")
 	@NotBlank(message = "O número do candidato é obrigatório")
 	private String numero;
 
