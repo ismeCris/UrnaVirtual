@@ -59,6 +59,15 @@ public class CandidatoController {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
 	}
+	@GetMapping("/findByNumero/{numero}")
+	public ResponseEntity<Candidato> findByNumero(@PathVariable String numero) {
+		try {
+			Candidato candidato = this.candidatoService.findByNumero(numero);
+			return new ResponseEntity<>(candidato, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 	@GetMapping("/findAll")
 	public ResponseEntity<List<Candidato>> findAll() {

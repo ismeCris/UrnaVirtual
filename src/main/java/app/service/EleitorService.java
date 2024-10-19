@@ -51,6 +51,17 @@ public class EleitorService {
 			throw new RuntimeException("Eleitor não encontrado");
 		}
 	}
+	
+	public Eleitor findByCpf(String cpf) {
+		
+		Optional<Eleitor> optional = this.eleitorRepository.findByCpf(cpf);
+		
+		if (optional.isPresent()) {
+			return optional.get();
+		} else {
+			throw new RuntimeException("Eleitor não encontrado");
+		}
+	}
 
 	public List<Eleitor> findAll() {
 		return this.eleitorRepository.findByStatusNot(Status.INATIVO);
