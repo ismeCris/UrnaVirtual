@@ -56,34 +56,43 @@ public class VotoService {
 	}
 
 	public Apuracao realizarAapuracao() {
+	    Apuracao apuracao = new Apuracao();
+	    List<Candidato> prefeitosAtivos = candidatoService.prefeitosAtivos();
+	    List<Candidato> vereadoresAtivos = candidatoService.vereadoresAtivos();
+	    int totalVotos = 0;
 
-		Apuracao apuracao = new Apuracao();
-		List<Candidato> prefeotosAti = candidatoService.prefeitosAtivos();
-		List<Candidato> vereadorAti = candidatoService.vereadoresAtivos();
-		int totalVotos = 0;
+	    try {
+	        calcularVotos(prefeitosAtivos, true);
+	        calcularVotos(vereadoresAtivos, false);
+	    } catch (Exception e) {
+	       
+	        System.err.println("Erro ao realizar apuração: " + e.getMessage());
+	        return null; 
+	    }
+	    System.out.println("Candidatos a Prefeito: " + prefeitosAtivos);
+	    System.out.println("Candidatos a Vereador: " + vereadoresAtivos);
 
-		for (Candidato prefeito : prefeotosAti) {
-			int totalVotosCandidato = votoRepository.contaVotosPrefeito(prefeito.getId());
-			totalVotos += totalVotosCandidato;
-			prefeito.setVotosApurados(totalVotosCandidato);
-		}
-		for (Candidato vereador : vereadorAti) {
-			int totalVotosCandidato = votoRepository.contaVotosVereador(vereador.getId());
-			vereador.setVotosApurados(totalVotosCandidato);
-		}
+	    // Ordenar listas pelo total de votos
+	    Comparator<Candidato> porVotosApuradosDesc = Comparator.comparingInt(Candidato::getVotosApurados).reversed();
 
-		// Ordenar listas pelo total de votos
-		Comparator<Candidato> porVotosApuradosDesc = Comparator.comparingInt(Candidato::getVotosApurados).reversed();
+	    prefeitosAtivos.sort(porVotosApuradosDesc);
+	    vereadoresAtivos.sort(porVotosApuradosDesc);
 
-		prefeotosAti.sort(porVotosApuradosDesc);
-		vereadorAti.sort(porVotosApuradosDesc);
+	    apuracao.setCandidatosPrefeito(prefeitosAtivos);
+	    apuracao.setCandidatosVereador(vereadoresAtivos);
+	    apuracao.setTotalVotos(totalVotos);
 
-		apuracao.setCandidatosPrefeito(prefeotosAti);
-		apuracao.setCandidatosVereador(vereadorAti);
-		apuracao.setTotalVotos(totalVotos);
-
-		return apuracao;
+	    return apuracao;
 	}
+
+	private void calcularVotos(List<Candidato> candidatos, boolean isPrefeito) {
+	    for (Candidato candidato : candidatos) {
+	        int totalVotosCandidato = isPrefeito ? votoRepository.contaVotosPrefeito(candidato.getId())
+	                                              : votoRepository.contaVotosVereador(candidato.getId());
+	        candidato.setVotosApurados(totalVotosCandidato);
+	    }
+	}
+
 
 	public boolean eleitorApto(Eleitor eleitor) {
 
