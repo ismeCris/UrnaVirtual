@@ -107,6 +107,14 @@ public class CandidatoService {
 	    if (candidatoExistente.isPresent() && !candidatoExistente.get().getId().equals(candidato.getId())) {
 	        throw new RuntimeException("O CPF " + candidato.getCpf() + " já está cadastrado para outro candidato.");
 	    }
+	    
+
+	    // Verifica se o número já está cadastrado para outro candidato
+	    Optional<Candidato> candidatoExistentePorNumero = candidatoRepository.findByNumero(candidato.getNumero());
+	    if (candidatoExistentePorNumero.isPresent() && 
+	        (candidato.getId() == null || !candidatoExistentePorNumero.get().getId().equals(candidato.getId()))) {
+	        throw new RuntimeException("O número " + candidato.getNumero() + " já está cadastrado para outro candidato.");
+	    }
 
 	    // Validação do número
 	    if (candidato.getFuncao() == 1 && candidato.getNumero().length() != 2) {
