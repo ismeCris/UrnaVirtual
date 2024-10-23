@@ -52,7 +52,7 @@ public class EleitorController{
 			return new ResponseEntity<>(eleitor, HttpStatus.OK);
 
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
 	}
 	
@@ -63,7 +63,7 @@ public class EleitorController{
 			return new ResponseEntity<>(eleitor, HttpStatus.OK);
 			
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
 	}
 	
@@ -84,7 +84,7 @@ public class EleitorController{
 			String message = this.eleitorService.delete(id);
 			return new ResponseEntity<>(message, HttpStatus.OK);
 		} catch (Exception e) {
-			 return new ResponseEntity<>("Eleitor não encontrado", HttpStatus.NOT_FOUND);
+			 return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
 }
