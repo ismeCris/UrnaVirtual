@@ -28,8 +28,7 @@ public class CandidatoController {
 	@Autowired
 	private CandidatoService candidatoService;
 
-	 @PostMapping("/cadastrar")
-	// No serviço ou controlador
+	 @PostMapping("/save")
 	 public ResponseEntity<String> cadastrarCandidato(@RequestBody @Valid Candidato candidato) {
 	     try {
 	         String response = candidatoService.cadastrarCandidato(candidato);
