@@ -15,6 +15,9 @@ public interface CandidatoRepository extends JpaRepository<Candidato, Long> {
 
 	public List<Candidato> findByFuncaoAndStatus(Integer funcao, Candidato.Status status);
 	
+	public Optional<Candidato> findByNumeroAndStatus(String numero, Candidato.Status status);
+	
 	public Optional<Candidato> findByNumero(String numero);
+	
 	Optional<Candidato> findByCpf(String cpf);
 }
