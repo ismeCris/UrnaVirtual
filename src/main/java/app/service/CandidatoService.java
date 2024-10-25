@@ -107,7 +107,6 @@ public class CandidatoService {
 	    if (candidatoExistente.isPresent() && !candidatoExistente.get().getId().equals(candidato.getId())) {
 	        throw new RuntimeException("O CPF " + candidato.getCpf() + " já está cadastrado para outro candidato.");
 	    }
-	    
 
 	    // Verifica se o número já está cadastrado para outro candidato
 	    Optional<Candidato> candidatoExistentePorNumero = candidatoRepository.findByNumero(candidato.getNumero());
