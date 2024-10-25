@@ -64,7 +64,7 @@ public class CandidatoService {
 
 	public Candidato findByNumero(String numero) {
 		
-		Optional<Candidato> optional = this.candidatoRepository.findByNumero(numero);
+		Optional<Candidato> optional = this.candidatoRepository.findByNumeroAndStatus(numero, Candidato.Status.ATIVO);
 		
 		if (optional.isPresent()) {
 			return optional.get();
